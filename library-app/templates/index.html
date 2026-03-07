@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Library System - Home{% endblock %}
+{% block content %}
+<h1>Welcome to the Library</h1>
+<p class="subtitle">Manage books, members, and transactions from one place.</p>
+
+<div class="stats">
+    <a href="/search" style="text-decoration:none;">
+        <div class="stat-card">
+            <div class="number">📚</div>
+            <div class="label">Search Books</div>
+        </div>
+    </a>
+    <a href="/loans" style="text-decoration:none;">
+        <div class="stat-card">
+            <div class="number">📋</div>
+            <div class="label">View Transactions</div>
+        </div>
+    </a>
+    <a href="/members" style="text-decoration:none;">
+        <div class="stat-card">
+            <div class="number">👥</div>
+            <div class="label">View Members</div>
+        </div>
+    </a>
+</div>
+{% endblock %}

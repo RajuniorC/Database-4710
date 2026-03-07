@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Library System{% endblock %}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+
+        /* ── Navigation ── */
+        nav {
+            background: #1a1a2e;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        nav .logo {
+            color: #e8c547;
+            font-size: 20px;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        nav .links { display: flex; gap: 8px; }
+        nav .links a {
+            color: #ccc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        nav .links a:hover, nav .links a.active {
+            background: rgba(232, 197, 71, 0.15);
+            color: #e8c547;
+        }
+
+        /* ── Main Content ── */
+        .container {
+            max-width: 1000px;
+            margin: 32px auto;
+            padding: 0 24px;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #1a1a2e;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+
+        /* ── Flash Messages ── */
+        .flash {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .flash.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .flash.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* ── Search Bar ── */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-bar input:focus { border-color: #1a1a2e; }
+        .search-bar button {
+            padding: 12px 28px;
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-bar button:hover { background: #16213e; }
+
+        /* ── Card ── */
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        /* ── Table ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            color: #555;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        tr:hover td { background: #fafbfc; }
+
+        /* ── Badges ── */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-available { background: #d4edda; color: #155724; }
+        .badge-out       { background: #fff3cd; color: #856404; }
+        .badge-returned  { background: #d1ecf1; color: #0c5460; }
+        .badge-student   { background: #e8daef; color: #6c3483; }
+        .badge-premium   { background: #fdebd0; color: #af601a; }
+        .badge-basic     { background: #e5e8e8; color: #566573; }
+
+        /* ── Buttons ── */
+        .btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.85; }
+        .btn-checkout { background: #1a1a2e; color: white; }
+        .btn-return   { background: #27ae60; color: white; }
+        .btn-disabled { background: #ddd; color: #999; cursor: not-allowed; }
+
+        /* ── Empty State ── */
+        .empty {
+            text-align: center;
+            padding: 48px;
+            color: #999;
+        }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+        /* ── Stats Row ── */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .stat-card .label {
+            font-size: 13px;
+            color: #888;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">LIBRARY SYSTEM</a>
+        <div class="links">
+            <a href="/" class="{{ 'active' if request.endpoint == 'index' }}">Home</a>
+            <a href="/search" class="{{ 'active' if request.endpoint == 'search_books' }}">Search Books</a>
+            <a href="/loans" class="{{ 'active' if request.endpoint == 'active_loans' }}">Transactions</a>
+            <a href="/members" class="{{ 'active' if request.endpoint == 'members' }}">Members</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

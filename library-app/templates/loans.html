@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Transactions{% endblock %}
+{% block content %}
+<h1>Transactions</h1>
+<p class="subtitle">All checkout and return activity</p>
+
+<div class="card">
+    {% if loans %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Member</th>
+                <th>Book</th>
+                <th>Checked Out</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for loan in loans %}
+            <tr>
+                <td>{{ loan.transactionid }}</td>
+                <td>{{ loan.membername }}</td>
+                <td><strong>{{ loan.title }}</strong></td>
+                <td>{{ loan.transactiondate }}</td>
+                <td>
+                    {% if loan.returndate %}
+                        <span class="badge badge-returned">Returned {{ loan.returndate }}</span>
+                    {% else %}
+                        <span class="badge badge-out">Checked Out</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not loan.returndate %}
+                    <form action="/return" method="POST" style="display:inline;">
+                        <input type="hidden" name="transaction_id" value="{{ loan.transactionid }}">
+                        <input type="hidden" name="book_id" value="{{ loan.bookid }}">
+                        <button type="submit" class="btn btn-return">Return</button>
+                    </form>
+                    {% else %}
+                        <span style="color:#aaa; font-size:13px;">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+        <div class="empty-icon">📋</div>
+        <p>No transactions yet</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Members{% endblock %}
+{% block content %}
+<h1>Members</h1>
+<p class="subtitle">All registered library members</p>
+
+<div class="card">
+    {% if members %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Joined</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in members %}
+            <tr>
+                <td>{{ m.memberid }}</td>
+                <td><strong>{{ m.fullname }}</strong></td>
+                <td>{{ m.email }}</td>
+                <td>{{ m.phonenumber or '—' }}</td>
+                <td>{{ m.joindate }}</td>
+                <td>
+                    {% if m.membershiptype == 'Student' %}
+                        <span class="badge badge-student">Student</span>
+                    {% elif m.membershiptype == 'Premium' %}
+                        <span class="badge badge-premium">Premium</span>
+                    {% else %}
+                        <span class="badge badge-basic">Basic</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+        <div class="empty-icon">👥</div>
+        <p>No members found</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
