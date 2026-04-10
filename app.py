@@ -34,19 +34,23 @@ def search_books():
     if query:
         cursor.execute(
             """SELECT b.bookid, b.title, b.sku, b.genre,
-                      a.fullname AS authorname, b.availablecopies
+                      a."FirstName" || ' ' || a."LastName" AS authorname,
+                      b.availablecopies
                FROM book b
-               JOIN author a ON b.authorid = a.authorid
-               WHERE b.title ILIKE %s OR a.fullname ILIKE %s
+               JOIN "Author" a ON b.authorid = a."AuthorID"
+               WHERE b.title ILIKE %s
+                  OR a."FirstName" ILIKE %s
+                  OR a."LastName" ILIKE %s
                ORDER BY b.title""",
-            (f'%{query}%', f'%{query}%')
+            (f'%{query}%', f'%{query}%', f'%{query}%')
         )
     else:
         cursor.execute(
             """SELECT b.bookid, b.title, b.sku, b.genre,
-                      a.fullname AS authorname, b.availablecopies
+                      a."FirstName" || ' ' || a."LastName" AS authorname,
+                      b.availablecopies
                FROM book b
-               JOIN author a ON b.authorid = a.authorid
+               JOIN "Author" a ON b.authorid = a."AuthorID"
                ORDER BY b.title"""
         )
 
@@ -113,11 +117,12 @@ def active_loans():
     db = get_db()
     cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute(
-        """SELECT t.transactionid, m.fullname AS membername,
+        """SELECT t.transactionid,
+                  m."FullName" AS membername,
                   b.title, b.bookid, t.transactiondate, t.returndate
            FROM transactions t
-           JOIN member m ON t.memberid = m.memberid
-           JOIN book b   ON t.bookid   = b.bookid
+           JOIN "Member" m ON t.memberid = m."MemberID"
+           JOIN book b     ON t.bookid   = b.bookid
            ORDER BY t.returndate IS NULL DESC, t.transactiondate DESC"""
     )
     loans = cursor.fetchall()
@@ -130,7 +135,13 @@ def active_loans():
 def members():
     db = get_db()
     cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute("SELECT * FROM member ORDER BY fullname")
+    cursor.execute(
+        """SELECT "MemberID" AS memberid, "FullName" AS fullname,
+                  "Email" AS email, "PhoneNumber" AS phonenumber,
+                  "JoinDate" AS joindate, "MembershipType" AS membershiptype
+           FROM "Member"
+           ORDER BY "FullName" """
+    )
     members = cursor.fetchall()
     cursor.close()
     db.close()
